@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import Snowfall from 'react-snowfall'
+import Snowfall from 'react-snowfall';
+import useSound from 'use-sound';
+import jingle from './jingle.mp3'
 
 function App() {
   const apiKey = '0b0e3d4b045d4ccab6090544230612';
@@ -9,6 +11,14 @@ function App() {
 
   const [weatherData, setWeatherData] = useState(null);
   const [currentCityIndex, setCurrentCityIndex] = useState(0);
+
+  const [playSound] = useSound(jingle);
+
+  useEffect(() => {
+    if (weatherData && weatherData.current.condition.text.toLowerCase().includes('snow')) {
+      playSound();
+    }
+  }, [weatherData]);
 
   async function getWeather(city) {
     try {
@@ -26,7 +36,6 @@ function App() {
     setCurrentCityIndex((prevIndex) => (prevIndex + 1) % cities.length);
     const currentCity = cities[currentCityIndex];
     getWeather(currentCity);
-
   }
 
   useEffect(() => {
@@ -34,17 +43,16 @@ function App() {
   }, []); 
 
   const bodyStyle = {
-    backgroundColor: 'rgb(23, 40, 117)',
+    backgroundColor: 'black',
     color: 'white',
   };
 
-
   return (
     <div className="App">
-      <header className="App-header">
+      <header className="App-header" style={bodyStyle}>
         <button onClick={handleButtonClick} style={buttonStyle}>Find Snow</button>
         {weatherData && (
-          <div >
+          <div>
             <h2>Weather for {weatherData.location.name}</h2>
             <p>Weather: {weatherData.current.condition.text}</p>
             <p>Temperature: {weatherData.current.temp_c}°C</p>
@@ -62,13 +70,12 @@ function App() {
 
 const buttonStyle = {
   padding: '10px 20px',
-  fontSize: '16px',
-  color: 'black',
+  fontSize: '26px',
   border: 'none',
-  borderRadius: '5px',
+  borderRadius: '2px',
   cursor: 'pointer',
+  backgroundColor: 'red',
+  color: 'white'
 };
-
-
 
 export default App;
